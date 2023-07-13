@@ -50,17 +50,20 @@ const googleSignIn = async (req, res = response) => {
   const { id_token } = req.body;
 
   try {
-    const { name, img, email } = await googleVerify(id_token);
-    let user = await User.findOne({email});
+    const { mail, name, img } = await googleVerify(id_token);
+    console.log('EL MAIL ES', mail)
+    let user = await User.findOne({mail});
     
-    if( !user ) {
+    if ( !user ) {
       const data = {
         name,
-        email,
+        mail,
+        password: 'quierounaBudwaiseRr',
         img,
-        password: 'quierounaBudwaiser',
-        google: true,
+        role: 'USER_ROLE',
+        google: true      
       }
+
       user = new User(data);
       await user.save();
     }
@@ -76,7 +79,7 @@ const googleSignIn = async (req, res = response) => {
     res.json({
       user,
       token
-    })
+    });
 
   } catch (error) {
     res.status(400).json({
@@ -84,8 +87,6 @@ const googleSignIn = async (req, res = response) => {
       error
     });
   }
-
-
 }
 
 module.exports = {
